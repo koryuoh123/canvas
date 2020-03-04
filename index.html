@@ -17,23 +17,51 @@
       let painting = false; //初始状态
       ctx.fillStyle = "black";
       ctx.strokeStyle = "none";
-      canvas.onmousedown = () => {
-        painting = true;
-      };
-      canvas.onmouseup = () => {
-        painting = false;
-      };
-      canvas.onmousemove = e => {
-        if (painting === true) {
-          //开始画
+      ctx.lineCap = "round";
+      ctx.lineWidth = "4";
+      let last; //记录点
+      var isTouchDevice = "ontouchstart" in document.documentElement;
+
+      if (isTouchDevice) {
+        //···········手机浏览器··········
+        console.log(111);
+        canvas.ontouchstart = e => {
+          let x = e.touches[0].clientX;
+          let y = e.touches[0].clientY;
+          last = [x, y];
+        };
+        canvas.ontouchmove = e => {
+
           ctx.beginPath();
-          ctx.arc(e.clientX, e.clientY, 10, 0, 2 * Math.PI);
+          ctx.moveTo(last[0], last[1]);
+          let x = e.touches[0].clientX;
+          let y = e.touches[0].clientY;
+          ctx.lineTo(x, y);
+          
           ctx.stroke();
-          ctx.fill();
-        } else {
-          console.log("什么也不做");
-        }
-      };
+          last = [x,y];
+        };
+      } else {
+        //···········电脑浏览器············
+        canvas.onmousedown = e => {
+          painting = true;
+          last = [e.clientX, e.clientY];
+        };
+        canvas.onmouseup = y => {
+          painting = false;
+        };
+        canvas.onmousemove = e => {
+          if (painting === true) {
+            //开始画
+            ctx.beginPath();
+            ctx.moveTo(last[(0, 0)], last[(0, 1)]);
+            ctx.lineTo(e.clientX, e.clientY);
+            ctx.stroke();
+            ctx.lineCap = "round";
+            last = [e.clientX, e.clientY];
+          }
+        };
+      }
     </script>
   </body>
 </html>
